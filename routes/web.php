@@ -1,65 +1,53 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ChildController;
-use App\Http\Controllers\MeasurementController;
-use App\Http\Controllers\TodoController;
 
-Route::middleware(['auth'])->group(function () {
+// SIMPLE AUTH ROUTES FOR TESTING
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
 
-    // Dashboard
-    Route::get('/dashboard', function () {
-        $user = request()->user();
+Route::get('/register', function () {
+    return view('auth.register');
+})->name('register');
 
-        $children = $user->children()
-            ->with('latestMeasurement')
-            ->take(5)
-            ->get();
-
-        $totalChildren = $user->children()->count();
-
-        return view('dashboard', compact('children', 'totalChildren'));
-    })->name('dashboard');
-
-    // =====================
-    // CHILDREN ROUTES
-    // =====================
-
-    Route::get('/children', [ChildController::class, 'index'])
-        ->name('children.index');
-
-    Route::get('/children/create', [ChildController::class, 'create'])
-        ->name('children.create');
-
-    Route::post('/children', [ChildController::class, 'store'])
-        ->name('children.store');
-
-    Route::get('/children/{child}', [ChildController::class, 'show'])
-        ->name('children.show');
-
-    Route::get('/children/{child}/edit', [ChildController::class, 'edit'])
-        ->name('children.edit');
-
-    Route::put('/children/{child}', [ChildController::class, 'update'])
-        ->name('children.update');
-
-    Route::delete('/children/{child}', [ChildController::class, 'destroy'])
-        ->name('children.destroy');
-
-    // =====================
-    // MEASUREMENTS
-    // =====================
-
-    Route::post('/children/{child}/measurements', [MeasurementController::class, 'store'])
-        ->name('measurements.store');
-
-    // =====================
-    // TODOS
-    // =====================
-
-    Route::post('/children/{child}/todos', [TodoController::class, 'store'])
-        ->name('todos.store');
-
-    Route::put('/todos/{todo}/toggle', [TodoController::class, 'toggle'])
-        ->name('todos.toggle');
+Route::post('/login', function () {
+    // Untuk testing, redirect ke dashboard
+    return redirect('/dashboard');
 });
+
+Route::post('/register', function () {
+    // Untuk testing, redirect ke login
+    return redirect('/login')->with('status', 'Registrasi berhasil!');
+});
+
+// Dashboard (protected)
+Route::get('/dashboard', function () {
+    return "Dashboard akan datang di sini!";
+})->name('dashboard');
+
+// Welcome page
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// ... setelah routes login/register
+
+// Dashboard route
+Route::get('/dashboard', function () {
+    return view('layouts.dashboard');
+})->name('dashboard');
+
+// Logout route (dummy)
+Route::post('/logout', function () {
+    return redirect('/login')->with('status', 'Berhasil logout!');
+})->name('logout');
+
+// Children routes (sementara dummy)
+Route::get('/children', function () {
+    return "Halaman list anak akan datang!";
+})->name('children.index');
+
+Route::get('/children/create', function () {
+    return "Form tambah anak akan datang!";
+})->name('children.create');
