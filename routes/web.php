@@ -2,52 +2,62 @@
 
 use Illuminate\Support\Facades\Route;
 
-// SIMPLE AUTH ROUTES FOR TESTING
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+| SEMENTARA TANPA AUTH MIDDLEWARE
+| Untuk testing tampilan saja
+*/
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register');
-
-Route::post('/login', function () {
-    // Untuk testing, redirect ke dashboard
-    return redirect('/dashboard');
-});
-
-Route::post('/register', function () {
-    // Untuk testing, redirect ke login
-    return redirect('/login')->with('status', 'Registrasi berhasil!');
-});
-
-// Dashboard (protected)
-Route::get('/dashboard', function () {
-    return "Dashboard akan datang di sini!";
-})->name('dashboard');
-
-// Welcome page
+// ==================== PUBLIC ROUTES ====================
 Route::get('/', function () {
     return view('welcome');
 });
 
-// ... setelah routes login/register
+// ==================== AUTH ROUTES (DUMMY) ====================
+// Login
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
 
-// Dashboard route
-Route::get('/dashboard', function () {
-    return view('layouts.dashboard');
-})->name('dashboard');
+Route::post('/login', function () {
+    return redirect('/dashboard')->with('success', 'Login berhasil!');
+});
 
-// Logout route (dummy)
+// Register  
+Route::get('/register', function () {
+    return view('auth.register');
+})->name('register');
+
+Route::post('/register', function () {
+    return redirect('/login')->with('status', 'Registrasi berhasil! Silakan login.');
+});
+
+// Logout
 Route::post('/logout', function () {
     return redirect('/login')->with('status', 'Berhasil logout!');
 })->name('logout');
 
-// Children routes (sementara dummy)
+// ==================== APP ROUTES (TANPA MIDDLEWARE) ====================
+// Dashboard
+Route::get('/dashboard', function () {
+    return view('layouts.dashboard');
+})->name('dashboard');
+// Children routes
 Route::get('/children', function () {
-    return "Halaman list anak akan datang!";
+    return view('children.index');
 })->name('children.index');
 
 Route::get('/children/create', function () {
-    return "Form tambah anak akan datang!";
+    return view('children.create');
 })->name('children.create');
+
+// Route untuk handle form submission (sementara dummy)
+Route::post('/children', function () {
+    return redirect('/children')->with('success', 'Data anak berhasil ditambahkan!');
+})->name('children.store');
+
+Route::get('/children/{id}', function ($id) {
+    return view('children.show', ['childId' => $id]);
+})->name('children.show');
