@@ -9,6 +9,12 @@ use App\Services\GrowthService;
 
 class MeasurementController extends Controller
 {
+
+    public function create(Child $child)
+    {
+        return view('measurements.create', compact('child'));
+    }
+
     public function store(Request $request, Child $child)
     {
         // Authorization - PAKAI GAYA KAMU

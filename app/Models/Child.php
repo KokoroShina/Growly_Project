@@ -21,12 +21,12 @@ class Child extends Model
 
     public function measurements()
     {
-        return $this->hashMany(Measurement::class)->latest('date');
+        return $this->hasMany(Measurement::class)->latest('date');
     }
 
     public function latestMeasurement()
     {
-        return $this->hasOne(Measurement::class)->latessOfMany();
+        return $this->hasOne(Measurement::class)->latestOfMany();
     }
 
     public function todos()
@@ -36,7 +36,7 @@ class Child extends Model
 
     public function getAgeInMonthsAttribute ()
     {
-        return $this->birth_age->diffInMonths(now());
+        return $this->birth_date->diffInMonths(now());
     }
 
 }

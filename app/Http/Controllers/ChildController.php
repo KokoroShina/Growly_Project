@@ -29,6 +29,7 @@ class ChildController extends Controller
             'birth_date' => 'required|date',
             'gender' => 'required|in:male,female',
             'photo'=> 'nullable|image|max:2048',
+            'notes' => 'nullable|string'
         ]);
 
         $user = $request->user();
