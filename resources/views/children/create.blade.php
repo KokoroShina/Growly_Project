@@ -1,6 +1,8 @@
-@extends('layouts.app') @section('title', 'Tambah Anak') @section('page_title',
-'➕ Tambah Anak Baru') @section('page_subtitle', 'Isi data anak untuk mulai
-memantau tumbuh kembangnya') @section('content')
+@extends('layouts.app')
+@section('title', 'Tambah Anak') 
+@section('page_title','➕ Tambah Anak Baru')
+@section('page_subtitle', 'Isi data anak untuk mulaimemantau tumbuh kembangnya')
+@section('content')
 <div class="max-w-3xl mx-auto">
     <!-- Back Button -->
     <div class="mb-6">

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Growly') - Pantau Tumbuh Kembang Anak</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .sidebar { transition: all 0.3s ease; }
     </style>
@@ -21,7 +22,7 @@
 
 <!-- Sidebar -->
 <aside id="sidebar"
-    class="sidebar fixed top-0 left-0 h-full w-[250px] bg-white shadow-lg z-40 hidden lg:block">
+    class="sidebar fixed top-0 left-0 h-full w-250px bg-white shadow-lg z-40 hidden lg:block">
 
     <!-- Logo -->
     <div class="p-6 border-b">
@@ -107,7 +108,7 @@
 
 
 <!-- Main Content Area -->
-<main id="mainContent" class="min-h-screen lg:ml-[250px]">
+<main id="mainContent" class="min-h-screen lg:ml-250px">
 
     <div class="p-4 lg:p-8">
 

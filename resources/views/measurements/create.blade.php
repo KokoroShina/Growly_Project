@@ -8,27 +8,30 @@
 <div class="max-w-3xl mx-auto">
     <!-- Back Button -->
     <div class="mb-6">
-        <a href="{{ route('children.show', $childId ?? 1) }}" class="inline-flex items-center text-green-600 hover:text-green-800">
+        <a href="{{ route('children.show', $child) }}" class="inline-flex items-center text-green-600 hover:text-green-800">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
             </svg>
-            Kembali ke Profil Anak
+            Kembali ke Profil {{ $child->name }}
         </a>
     </div>
 
-    <!-- Info Anak Card -->
+    <!-- Info Anak Card (DATA REAL) -->
     <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
         <div class="flex items-center">
             <div class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-2xl">
-                👦
+                {{ $child->gender == 'male' ? '👦' : '👧' }}
             </div>
             <div class="ml-4">
-                <h3 class="font-medium text-blue-900">Andi Pratama</h3>
-                <p class="text-sm text-blue-700">3 tahun 2 bulan • Laki-laki</p>
+                <h3 class="font-medium text-blue-900">{{ $child->name }}</h3>
+                <p class="text-sm text-blue-700">
+                    {{ floor($child->age_in_months/12) }} tahun {{ $child->age_in_months % 12 }} bulan • 
+                    {{ $child->gender == 'male' ? 'Laki-laki' : 'Perempuan' }}
+                </p>
             </div>
             <div class="ml-auto">
                 <span class="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                    Pengukuran ke-4
+                    Pengukuran ke-{{ $child->measurements->count() + 1 }}
                 </span>
             </div>
         </div>
@@ -36,9 +39,9 @@
 
     <!-- Form Card -->
     <div class="bg-white rounded-xl shadow-lg p-6">
-        <form method="POST" action="{{ route('measurements.store') }}">
+        <form method="POST" action="{{ route('measurements.store',$child) }}">
             @csrf
-            <input type="hidden" name="child_id" value="{{ $childId ?? 1 }}">
+            <input type="hidden" name="child_id" value="{{ $child->id }}">
             
             <!-- Section: Data Pengukuran -->
             <div class="mb-8">
@@ -92,8 +95,8 @@
                             <input
                                 id="height"
                                 type="number"
-                                step="0.1"
-                                min="30"
+                                step="any"
+                                min="20"
                                 max="150"
                                 name="height"
                                 required
@@ -160,7 +163,7 @@
 
             <!-- Form Actions -->
             <div class="flex justify-end space-x-4 pt-6 border-t">
-                <a href="{{ route('children.show', $childId ?? 1) }}" 
+                <a href="{{ route('children.show', $child) }}" 
                    class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
                     Batal
                 </a>
@@ -200,13 +203,10 @@
             return;
         }
 
-        // Simulasi perhitungan (nanti diganti dengan AJAX ke server)
-        const age = 38; // dummy umur dalam bulan
-        const gender = 'male'; // dummy gender
-        
         // Logika sederhana untuk demo
-        let status, zscore, recommendation;
         const bmi = weight / ((height/100) * (height/100));
+        
+        let status, zscore, recommendation;
         
         if (bmi < 14) {
             status = 'Underweight';
@@ -241,16 +241,5 @@
             statusEl.className = 'font-bold text-orange-600';
         }
     });
-
-    // Auto-format input number
-    document.getElementById('weight').addEventListener('input', function() {
-        if (this.value < 0) this.value = 1;
-        if (this.value > 50) this.value = 50;
-    });
-
-    document.getElementById('height').addEventListener('input', function() {
-        if (this.value < 30) this.value = 30;
-        if (this.value > 150) this.value = 150;
-    });
 </script>
-@endsection
+@endsection 

@@ -138,7 +138,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <a href="{{ route('children.show', $child) }}" class="text-green-600 hover:text-green-900 mr-3">Lihat</a>
                             <a href="{{ route('children.edit', $child) }}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
-                            <form action="{{ route('children.destroy', $child) }}" method="POST" class="inline">
+                            <form action="{{ route('children.destroy', $child) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus {{ $child->name }}? Semua data pengukuran akan ikut terhapus.')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
