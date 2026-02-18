@@ -18,7 +18,7 @@ class Measurement extends Model
     'height'=> 'decimal:2',
     ];
 
-    protected function child ()
+    public function child ()
     {
         return $this->belongsTo(Child::class);
     }

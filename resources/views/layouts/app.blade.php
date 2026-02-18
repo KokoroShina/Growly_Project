@@ -71,23 +71,19 @@
             </li>
 
             <li>
-                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700">
+                <a href="{{ route('grafik.index') }}" 
+                class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700 hover:text-green-700 {{ request()->routeIs('grafik.*') ? 'bg-green-50 text-green-700' : '' }}">
                     <span>📈</span>
                     <span>Grafik</span>
                 </a>
             </li>
 
-            <li>
-                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700">
+
+           <li>
+                <a href="{{ route('todos.global') }}" 
+                class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700 hover:text-green-700 {{ request()->routeIs('todos.global') ? 'bg-green-50 text-green-700' : '' }}">
                     <span>✅</span>
                     <span>Todo List</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 text-gray-700">
-                    <span>⚙️</span>
-                    <span>Pengaturan</span>
                 </a>
             </li>
         </ul>

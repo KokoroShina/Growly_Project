@@ -57,38 +57,69 @@ class ChildController extends Controller
     }
 
     public function show(Request $request, Child $child)
-    {
-        // Cek kepemilikan
-        if ($child->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        $child->load('measurements');
-
-        $chartData = [
-            'labels'=> [], //tanggal
-            'weight'=> [], //berat
-            'height'=> [], //tinggi
-        ];
-
-        foreach($child->measurements->sortBy('date') as $m)
-            {
-                $chartData['label'][]= $m->date->format('d M');
-                $chartData['weight'][]= $m->weight;
-                $chartData['height'][]= $m->height;
-                
-            }
-
-        $measurements = $child->measurements()
-            ->orderBy('date', 'desc')
-            ->get();
-
-        $todos = $child->todos()
-            ->whereDate('date', today())
-            ->get();
-
-        return view('children.show', compact('child', 'measurements', 'todos', 'chartData'));
+{
+    // Cek kepemilikan
+    if ($child->user_id !== Auth::id()) {
+        abort(403);
     }
+
+    // Load measurements
+    $child->load('measurements');
+
+    // AMBIL TODO UNTUK HARI INI
+    $todos = $child->todos()->whereDate('date', today())->get();
+
+    // HITUNG STREAK
+    $streak = 0;
+    $currentDate = today();
+    
+    // Cek streak mundur (max 30 hari untuk keamanan)
+    for ($i = 0; $i < 30; $i++) {
+        $checkDate = today()->subDays($i);
+        $completed = $child->todos()
+            ->whereDate('date', $checkDate)
+            ->where('is_completed', true)
+            ->exists();
+        
+        if ($completed) {
+            $streak++;
+        } else {
+            // Kalau hari ini tidak ada todo selesai, streak 0
+            if ($i === 0) {
+                $streak = 0;
+            }
+            break;
+        }
+    }
+
+    // SIAPKAN DATA CHART
+    $chartData = [
+        'labels' => [], // tanggal
+        'weight' => [], // berat
+        'height' => [], // tinggi
+    ];
+
+    // Urutkan dari lama ke baru biar grafiknya bagus
+    foreach($child->measurements->sortBy('date') as $m) {
+        $chartData['labels'][] = $m->date->format('d M');
+        $chartData['weight'][] = $m->weight;
+        $chartData['height'][] = $m->height;
+    }
+
+    // AMBIL MEASUREMENTS (urut dari terbaru)
+    $measurements = $child->measurements()
+        ->orderBy('date', 'desc')
+        ->get();
+
+    // RETURN VIEW DENGAN SEMUA DATA
+    return view('children.show', compact(
+        'child', 
+        'measurements', 
+        'chartData', 
+        'todos', 
+        'streak'
+    ));
+}
 
     public function edit(Child $child)
     {

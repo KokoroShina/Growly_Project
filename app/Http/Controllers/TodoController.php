@@ -9,90 +9,173 @@ use Carbon\Carbon;
 
 class TodoController extends Controller
 {
+    /**
+     * Store a new todo
+     */
     public function store(Request $request, Child $child)
     {
+        // CEK KEPEMILIKAN - PAKAI STYLE KAMU
         if ($child->user_id !== $request->user()->id) {
-            abort(403);
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
         }
         
+        // Validasi
         $request->validate([
             'title' => 'required|string|max:100',
-            'description' => 'nullable|string|max:500',
-            'date' => 'required|date',
         ]);
         
+        // Simpan todo
         $todo = $child->todos()->create([
             'title' => $request->title,
-            'description' => $request->description,
-            'date' => $request->date,
+            'date' => today(),
             'is_completed' => false,
         ]);
         
-        return back()->with('success', 'Todo berhasil ditambahkan!');
+        // Hitung streak
+        $streak = $this->calculateStreak($child);
+
+        return response()->json([
+            'success' => true,
+            'todo' => [
+                'id' => $todo->id,
+                'title' => $todo->title,
+                'is_completed' => $todo->is_completed
+            ],
+            'streak' => $streak
+        ]);
     }
     
+    /**
+     * Toggle todo completion status
+     */
     public function toggle(Request $request, Todo $todo)
     {
+        // CEK KEPEMILIKAN - PAKAI STYLE KAMU
         if ($todo->child->user_id !== $request->user()->id) {
-            abort(403);
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
         }
         
+        // Toggle status
         $todo->update([
-            'is_completed' => !$todo->is_completed,
+            'is_completed' => !$todo->is_completed
         ]);
         
-        // FIX: Convert string date to Carbon object
-        $todoDate = Carbon::parse($todo->date);
-        $today = Carbon::today();
-        
-        // Hitung streak jika todo hari ini selesai
-        if ($todo->is_completed && $todoDate->isSameDay($today)) {
-            $this->updateStreak($todo->child);
-        }
+        // Hitung streak
+        $streak = $this->calculateStreak($todo->child);
         
         return response()->json([
             'success' => true,
             'is_completed' => $todo->is_completed,
-            'streak' => $this->getStreak($todo->child),
+            'streak' => $streak
         ]);
     }
     
+    /**
+     * Delete a todo
+     */
     public function destroy(Request $request, Todo $todo)
     {
-        $child = $todo->child;
-        
-        if ($child->user_id !== $request->user()->id) {
-            abort(403);
+        // CEK KEPEMILIKAN - PAKAI STYLE KAMU
+        if ($todo->child->user_id !== $request->user()->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
         }
         
+        $child = $todo->child;
         $todo->delete();
         
-        return back()->with('success', 'Todo berhasil dihapus!');
+        // Hitung streak
+        $streak = $this->calculateStreak($child);
+        
+        return response()->json([
+            'success' => true,
+            'streak' => $streak
+        ]);
     }
     
-    private function updateStreak(Child $child)
+    /**
+     * Calculate streak based on database
+     */
+    private function calculateStreak(Child $child)
     {
-        $yesterday = Carbon::yesterday();
+        $streak = 0;
         
-        // FIX: Parse date string untuk comparison
-        $yesterdayTodo = $child->todos()
-            ->get()
-            ->filter(function ($todo) use ($yesterday) {
-                $todoDate = Carbon::parse($todo->date);
-                return $todoDate->isSameDay($yesterday) && $todo->is_completed;
-            })
-            ->isNotEmpty();
-        
-        if ($yesterdayTodo) {
-            $currentStreak = session("streak_{$child->id}", 1);
-            session(["streak_{$child->id}" => $currentStreak + 1]);
-        } else {
-            session(["streak_{$child->id}" => 1]);
+        // Cek streak mundur sampai 30 hari
+        for ($i = 0; $i < 30; $i++) {
+            $checkDate = today()->subDays($i);
+            
+            $completed = $child->todos()
+                ->whereDate('date', $checkDate)
+                ->where('is_completed', true)
+                ->exists();
+            
+            if ($completed) {
+                $streak++;
+            } else {
+                // Kalau hari ini tidak ada todo selesai, streak = 0
+                if ($i === 0) {
+                    return 0;
+                }
+                break;
+            }
         }
+        
+        return $streak;
+    }
+
+
+    public function globalIndex(Request $request)
+{
+    $user = $request->user();
+    $children = $user->children()->with('todos')->get();
+    
+    // Semua todo, group by status
+    $todos = collect();
+    foreach ($children as $child) {
+        $todos = $todos->concat($child->todos()->with('child')->orderBy('date', 'desc')->get());
     }
     
-    private function getStreak(Child $child)
-    {
-        return session("streak_{$child->id}", 0);
+    // Group by date
+    $todosByDate = $todos->groupBy(function($todo) {
+        return $todo->date->format('Y-m-d');
+    })->sortKeysDesc();
+    
+    // Statistik
+    $totalTodos = $todos->count();
+    $completedTodos = $todos->where('is_completed', true)->count();
+    $pendingTodos = $totalTodos - $completedTodos;
+    $totalStreak = $this->calculateTotalStreak($children);
+    
+    return view('todos.global', compact('todosByDate', 'totalTodos', 'completedTodos', 'pendingTodos', 'totalStreak'));
+}
+
+private function calculateTotalStreak($children)
+{
+    $total = 0;
+    foreach ($children as $child) {
+        $streak = 0;
+        for ($i = 0; $i < 30; $i++) {
+            $date = today()->subDays($i);
+            $completed = $child->todos()
+                ->whereDate('date', $date)
+                ->where('is_completed', true)
+                ->exists();
+            if ($completed) {
+                $streak++;
+            } else {
+                break;
+            }
+        }
+        $total += $streak;
     }
+    return $total;
+}
 }
