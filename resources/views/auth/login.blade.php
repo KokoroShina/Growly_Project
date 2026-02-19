@@ -37,7 +37,7 @@
             </div>
             @endif
 
-            <!-- FORM - PAKAI ACTION LANGSUNG -->
+            <!-- FORM -->
             <form method="POST" action="/login">
                 @csrf
                 
@@ -80,7 +80,7 @@
                     Masuk
                 </button>
 
-                <!-- Register Link - PAKAI URL LANGSUNG -->
+                <!-- Register Link -->
                 <div class="text-center">
                     <p class="text-gray-600">
                         Belum punya akun?

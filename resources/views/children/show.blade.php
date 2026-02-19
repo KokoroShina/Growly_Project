@@ -17,67 +17,78 @@
     </div>
 
     <!-- Profile Header Card -->
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <!-- Foto/Avatar -->
-                <div class="h-20 w-20 rounded-full bg-green-100 flex items-center justify-center text-4xl text-green-600">
-                    {{ $child->gender == 'male' ? '👦' : '👧' }}
-                </div>
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900">{{ $child->name }}</h2>
-                    <div class="flex flex-wrap gap-2 mt-2">
-                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">{{ $child->birth_date->format('d F Y') }}</span>
-                        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">{{ $child->gender == 'male' ? 'Laki-laki' : 'Perempuan' }}</span>
-                    </div>
-                </div>
+<div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <!-- Foto/Avatar --->
+            <div class="h-20 w-20 rounded-full flex items-center justify-center text-4xl
+                @if($child->hasPhoto())
+                    overflow-hidden
+                @else
+                    {{ $child->gender == 'male' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600' }}
+                @endif">
+                
+                @if($child->hasPhoto())
+                    <img src="{{ $child->photo_url }}" alt="{{ $child->name }}" 
+                         class="h-full w-full object-cover rounded-full">
+                @else
+                    {{ $child->photo_url }}  {{-- Kalau gak ada foto bakalan nampilin emoji cwk/cwk --}}
+                @endif
             </div>
-            
-            <!-- Status Gizi -->
-            <div class="mt-4 md:mt-0">
-                <div class="text-center">
-                    <p class="text-sm text-gray-500 mb-1">Status Gizi</p>
-                    @php
-                        $latestMeasurement = $child->measurements->last();
-                        $statusClass = match($latestMeasurement->status ?? '') {
-                            'normal' => 'bg-green-100 text-green-800',
-                            'underweight' => 'bg-yellow-100 text-yellow-800',
-                            'overweight' => 'bg-orange-100 text-orange-800',
-                            'severely_underweight' => 'bg-red-100 text-red-800',
-                            default => 'bg-gray-100 text-gray-800'
-                        };
-                    @endphp
-                    <span class="px-4 py-2 {{ $statusClass }} rounded-full text-lg font-semibold">
-                        {{ $latestMeasurement ? ucfirst($latestMeasurement->status) : 'Belum diukur' }}
-                    </span>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">{{ $child->name }}</h2>
+                <div class="flex flex-wrap gap-2 mt-2">
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">{{ $child->birth_date->format('d F Y') }}</span>
+                    <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">{{ $child->gender == 'male' ? 'Laki-laki' : 'Perempuan' }}</span>
                 </div>
             </div>
         </div>
-
-        <!-- Info Tambahan -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t">
-            <div>
-                <p class="text-sm text-gray-500">Tanggal Lahir</p>
-                <p class="font-medium">{{ $child->birth_date->format('d F Y') }}</p>
-            </div>
-            <div>
-                <p class="text-sm text-gray-500">Usia (bulan)</p>
-                <p class="font-medium">{{ $child->age_in_months }} bulan</p>
-            </div>
-            <div>
-                <p class="text-sm text-gray-500">Terakhir Diukur</p>
-                <p class="font-medium">{{ $latestMeasurement ? $latestMeasurement->date->diffForHumans() : '-' }}</p>
+        
+        <!-- Status Gizi -->
+        <div class="mt-4 md:mt-0">
+            <div class="text-center">
+                <p class="text-sm text-gray-500 mb-1">Status Gizi</p>
+                @php
+                    $latestMeasurement = $child->measurements->last();
+                    $statusClass = match($latestMeasurement->status ?? '') {
+                        'normal' => 'bg-green-100 text-green-800',
+                        'underweight' => 'bg-yellow-100 text-yellow-800',
+                        'overweight' => 'bg-orange-100 text-orange-800',
+                        'severely_underweight' => 'bg-red-100 text-red-800',
+                        default => 'bg-gray-100 text-gray-800'
+                    };
+                @endphp
+                <span class="px-4 py-2 {{ $statusClass }} rounded-full text-lg font-semibold">
+                    {{ $latestMeasurement ? ucfirst($latestMeasurement->status) : 'Belum diukur' }}
+                </span>
             </div>
         </div>
-
-        <!-- Catatan Kesehatan -->
-        @if($child->notes)
-        <div class="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-            <p class="text-sm font-medium text-yellow-800 mb-1">📝 Catatan Kesehatan</p>
-            <p class="text-sm text-yellow-700">{{ $child->notes }}</p>
-        </div>
-        @endif
     </div>
+
+    <!-- Info Tambahan -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t">
+        <div>
+            <p class="text-sm text-gray-500">Tanggal Lahir</p>
+            <p class="font-medium">{{ $child->birth_date->format('d F Y') }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Usia (bulan)</p>
+            <p class="font-medium">{{ $child->age_in_months }} bulan</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Terakhir Diukur</p>
+            <p class="font-medium">{{ $latestMeasurement ? $latestMeasurement->date->diffForHumans() : '-' }}</p>
+        </div>
+    </div>
+
+    <!-- Catatan Kesehatan -->
+    @if($child->notes)
+    <div class="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+        <p class="text-sm font-medium text-yellow-800 mb-1">📝 Catatan Kesehatan</p>
+        <p class="text-sm text-yellow-700">{{ $child->notes }}</p>
+    </div>
+    @endif
+</div>
 
     <!-- Action Buttons -->
     <div class="flex flex-wrap gap-3 mb-6">
@@ -361,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (!todoForm || !todoList) return;
 
-    // TAMBAH TODO
+    // Tambah todo
     todoForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -436,7 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // DELETE TODO
+    // Delete Todo
     todoList.addEventListener('click', function(e) {
         if (!e.target.classList.contains('delete-todo')) return;
         

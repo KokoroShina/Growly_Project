@@ -59,7 +59,7 @@
     </div>
 
     @if($children->isEmpty())
-        <!-- Empty State (jika belum ada anak) -->
+        <!-- Empty State  -->
         <div class="text-center py-12">
             <div class="max-w-md mx-auto">
                 <div class="text-6xl mb-4">👶</div>
@@ -93,8 +93,19 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <div class="h-10 w-10 rounded-full {{ $child->gender == 'male' ? 'bg-blue-100' : 'bg-pink-100' }} flex items-center justify-center {{ $child->gender == 'male' ? 'text-blue-600' : 'text-pink-600' }}">
-                                    {{ $child->gender == 'male' ? '👦' : '👧' }}
+                                <div class="h-10 w-10 rounded-full flex items-center justify-center text-xl
+                                    @if($child->hasPhoto())
+                                        overflow-hidden
+                                    @else
+                                        {{ $child->gender == 'male' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600' }}
+                                    @endif">
+                                    
+                                    @if($child->hasPhoto())
+                                        <img src="{{ $child->photo_url }}" alt="{{ $child->name }}" 
+                                            class="h-full w-full object-cover rounded-full">
+                                    @else
+                                        {{ $child->photo_url }}  {{-- Ini akan nampilin emoji --}}
+                                    @endif
                                 </div>
                                 <div class="ml-4">
                                     <div class="text-sm font-medium text-gray-900">{{ $child->name }}</div>
@@ -150,7 +161,7 @@
             </table>
         </div>
 
-        <!-- Pagination (kalau nanti ada) -->
+        <!-- Pagination -->
         @if(method_exists($children, 'links'))
         <div class="px-6 py-4 border-t border-gray-200">
             {{ $children->links() }}

@@ -16,7 +16,7 @@
         </a>
     </div>
 
-    <!-- Info Anak Card (DATA REAL) -->
+    <!-- Info Anak Card -->
     <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
         <div class="flex items-center">
             <div class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-2xl">

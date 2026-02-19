@@ -60,18 +60,26 @@
                 @enderror
             </div>
 
-            <!-- Photo -->
+           <!-- Photo -->
             <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-medium mb-2">Foto Anak</label>
-                @if($child->photo_path)
-                    <div class="mb-2">
-                        <img src="{{ asset('storage/'.$child->photo_path) }}" class="h-32 rounded-lg">
-                        <p class="text-sm text-gray-500 mt-1">Foto saat ini</p>
-                    </div>
+                
+                @if($child->hasPhoto())
+                <div class="mb-2 flex items-center">
+                    <img src="{{ $child->photo_url }}" class="h-20 w-20 rounded-full object-cover mr-4">
+                    <span class="text-sm text-gray-500">Foto saat ini</span>
+                </div>
                 @endif
+                
                 <input type="file" name="photo" accept="image/*" 
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg">
-                <p class="text-sm text-gray-500 mt-1">Kosongkan jika tidak ingin mengubah foto</p>
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+                <p class="text-sm text-gray-500 mt-1">
+                    @if($child->hasPhoto())
+                        Kosongkan jika tidak ingin mengubah foto
+                    @else
+                        Format: JPG, PNG. Maksimal 2MB
+                    @endif
+                </p>
                 @error('photo')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror

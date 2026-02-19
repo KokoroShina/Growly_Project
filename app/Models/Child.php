@@ -39,4 +39,20 @@ class Child extends Model
         return $this->birth_date->diffInMonths(now());
     }
 
+    public function getPhotoUrlAttribute ()
+    {
+        if($this->photo_path && file_exists(storage_path('app/public/'. $this->photo_path)))
+            {
+                return asset('storage/' . $this->photo_path);
+            }
+
+            //nge return emoji berdasarkan gambar nya
+            return $this->gender == 'male' ? '👦' : '👧';
+    }
+
+    public function hasPhoto()
+    {
+        return !is_null($this->photo_path) && file_exists(storage_path('app/public/'. $this->photo_path));
+    }
+
 }

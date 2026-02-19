@@ -23,7 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])
     ->name('dashboard');
 
-    // ================= CHILDREN =================
+    // Children Route
     Route::get('/children', [ChildController::class, 'index'])->name('children.index');
     Route::get('/children/create', [ChildController::class, 'create'])->name('children.create');
     Route::post('/children', [ChildController::class, 'store'])->name('children.store');
@@ -32,7 +32,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/children/{child}', [ChildController::class, 'update'])->name('children.update');
     Route::delete('/children/{child}', [ChildController::class, 'destroy'])->name('children.destroy');
 
-    // ================= MEASUREMENT =================
+    // Measurement Route
     Route::get('/measurements', [MeasurementController::class, 'index'])->name('measurements.index');
     Route::get('/measurements/create/{child}', [MeasurementController::class, 'create'])->name('measurements.create');
     Route::post('/measurements/{child}', [MeasurementController::class, 'store'])->name('measurements.store');
@@ -40,13 +40,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/measurements/{measurement}', [MeasurementController::class, 'update'])->name('measurements.update');
     Route::delete('/measurements/{measurement}', [MeasurementController::class, 'destroy'])->name('measurements.destroy');
 
-    // ================= TODOS =================
+    // Todos Route
     Route::get('/children/{child}/todos', [TodoController::class, 'index'])->name('todos.index');
     Route::post('/children/{child}/todos', [TodoController::class, 'store'])->name('todos.store');
     Route::put('/todos/{todo}/toggle', [TodoController::class, 'toggle'])->name('todos.toggle');
     Route::delete('/todos/{todo}', [TodoController::class, 'destroy'])->name('todos.destroy');
-
-    Route::get('/grafik', [GrafikController::class, 'index'])->name('grafik.index');
     Route::get('/todos', [TodoController::class, 'globalIndex'])->name('todos.global');
+    // Grafik Route
+    Route::get('/grafik', [GrafikController::class, 'index'])->name('grafik.index');
 
 });

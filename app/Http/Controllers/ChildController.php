@@ -152,7 +152,7 @@ class ChildController extends Controller
             'notes' => $request->notes,
         ]);
 
-        // Update foto jika ada
+        // Update foto kalau ada
         if ($request->hasFile('photo')) {
 
             // Hapus foto lama

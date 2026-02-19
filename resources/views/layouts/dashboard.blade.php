@@ -71,46 +71,58 @@
 
     @if(isset($children) && $children->count() > 0)
         <div class="divide-y divide-gray-200">
-            @foreach($children as $child)
-            <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
-                <div class="flex items-center">
-                    <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-xl">
-                        {{ $child->gender == 'male' ? '👦' : '👧' }}
-                    </div>
-                    <div class="ml-4">
-                        <h4 class="text-sm font-medium text-gray-900">{{ $child->name }}</h4>
-                        <p class="text-sm text-gray-500">
-                            {{ floor($child->age_in_months/12) }} tahun {{ $child->age_in_months % 12 }} bulan
-                        </p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    @if($child->latestMeasurement)
-                        @php
-                            $statusClass = match($child->latestMeasurement->status) {
-                                'normal' => 'bg-green-100 text-green-700',
-                                'underweight' => 'bg-yellow-100 text-yellow-700',
-                                'overweight' => 'bg-orange-100 text-orange-700',
-                                'severely_underweight' => 'bg-red-100 text-red-700',
-                                default => 'bg-gray-100 text-gray-700'
-                            };
-                        @endphp
-                        <span class="px-2 py-1 text-xs rounded-full {{ $statusClass }}">
-                            {{ ucfirst($child->latestMeasurement->status) }}
-                        </span>
-                    @else
-                        <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-600">
-                            Belum diukur
-                        </span>
-                    @endif
-                    <a href="{{ route('children.show', $child) }}" 
-                       class="text-sm text-green-600 hover:text-green-800">
-                        Detail →
-                    </a>
-                </div>
+    @foreach($children as $child)
+    <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+        <div class="flex items-center">
+            <!-- Foto/Avatar - OTOMATIS EMOJI ATAU FOTO -->
+            <div class="h-10 w-10 rounded-full flex items-center justify-center text-xl
+                @if($child->hasPhoto())
+                    overflow-hidden
+                @else
+                    {{ $child->gender == 'male' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600' }}
+                @endif">
+                
+                @if($child->hasPhoto())
+                    <img src="{{ $child->photo_url }}" alt="{{ $child->name }}" 
+                         class="h-full w-full object-cover rounded-full">
+                @else
+                    {{ $child->photo_url }}  {{-- Akan nampilin emoji 👦 atau 👧 --}}
+                @endif
             </div>
-            @endforeach
+            <div class="ml-4">
+                <h4 class="text-sm font-medium text-gray-900">{{ $child->name }}</h4>
+                <p class="text-sm text-gray-500">
+                    {{ floor($child->age_in_months/12) }} tahun {{ $child->age_in_months % 12 }} bulan
+                </p>
+            </div>
         </div>
+        <div class="flex items-center space-x-4">
+            @if($child->latestMeasurement)
+                @php
+                    $statusClass = match($child->latestMeasurement->status) {
+                        'normal' => 'bg-green-100 text-green-700',
+                        'underweight' => 'bg-yellow-100 text-yellow-700',
+                        'overweight' => 'bg-orange-100 text-orange-700',
+                        'severely_underweight' => 'bg-red-100 text-red-700',
+                        default => 'bg-gray-100 text-gray-700'
+                    };
+                @endphp
+                <span class="px-2 py-1 text-xs rounded-full {{ $statusClass }}">
+                    {{ ucfirst($child->latestMeasurement->status) }}
+                </span>
+            @else
+                <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-600">
+                    Belum diukur
+                </span>
+            @endif
+            <a href="{{ route('children.show', $child) }}" 
+               class="text-sm text-green-600 hover:text-green-800">
+                Detail →
+            </a>
+        </div>
+    </div>
+    @endforeach
+</div>
     @else
         <!-- Empty State -->
         <div class="text-center py-12">
